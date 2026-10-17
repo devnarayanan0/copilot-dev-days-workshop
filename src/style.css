@@ -57,6 +57,16 @@ h2 {
   margin: 0;
 }
 
+.timer {
+  color: var(--muted);
+  margin: 0.75rem 0 0;
+}
+
+.timer.low-time {
+  color: var(--wrong);
+  font-weight: 700;
+}
+
 #options {
   list-style: none;
   padding: 0;
