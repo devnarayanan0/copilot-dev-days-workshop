@@ -7,6 +7,7 @@ const {
   isCorrect,
   calculatePercentage,
   getGrade,
+  getFeedbackMessage,
   formatTimeLeft,
 } = require("../src/quiz.js");
 
@@ -35,6 +36,18 @@ test("shuffle keeps every item and does not change the original array", () => {
 
 test("getGrade gives an A for exactly 90%", () => {
   assert.equal(getGrade(90), "A");
+});
+
+test("getGrade gives a B for exactly 75% and a C for exactly 50%", () => {
+  assert.equal(getGrade(75), "B");
+  assert.equal(getGrade(50), "C");
+});
+
+test("getFeedbackMessage returns encouragement for each grade", () => {
+  assert.equal(getFeedbackMessage("A"), "Excellent work!");
+  assert.equal(getFeedbackMessage("B"), "Great job!");
+  assert.equal(getFeedbackMessage("C"), "Nice effort!");
+  assert.equal(getFeedbackMessage("Keep practicing"), "Keep practicing!");
 });
 
 test("formatTimeLeft formats a positive number of seconds", () => {

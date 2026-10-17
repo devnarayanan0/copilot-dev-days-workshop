@@ -34,10 +34,26 @@ function calculatePercentage(score, total) {
  * A = 90% or more, B = 75% or more, C = 50% or more.
  */
 function getGrade(percentage) {
-  if (percentage > 90) return "A";
-  if (percentage > 75) return "B";
-  if (percentage > 50) return "C";
+  if (percentage >= 90) return "A";
+  if (percentage >= 75) return "B";
+  if (percentage >= 50) return "C";
   return "Keep practicing";
+}
+
+/**
+ * Returns an encouraging message for a grade.
+ */
+function getFeedbackMessage(grade) {
+  switch (grade) {
+    case "A":
+      return "Excellent work!";
+    case "B":
+      return "Great job!";
+    case "C":
+      return "Nice effort!";
+    default:
+      return "Keep practicing!";
+  }
 }
 
 /**
@@ -49,5 +65,12 @@ function formatTimeLeft(seconds) {
 
 // Lets Node.js tests load this file. Browsers ignore this block.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { shuffle, isCorrect, calculatePercentage, getGrade, formatTimeLeft };
+  module.exports = {
+    shuffle,
+    isCorrect,
+    calculatePercentage,
+    getGrade,
+    getFeedbackMessage,
+    formatTimeLeft,
+  };
 }
