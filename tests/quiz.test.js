@@ -7,6 +7,7 @@ const {
   createQuiz,
   answerQuestion,
   isQuizFinished,
+  isNewBestScore,
   isCorrect,
   calculatePercentage,
   getGrade,
@@ -67,6 +68,16 @@ test("answerQuestion records an incorrect answer without mutating state", () => 
 test("isQuizFinished reports whether every question is complete", () => {
   assert.equal(isQuizFinished({ questions: [{}, {}], current: 1 }), false);
   assert.equal(isQuizFinished({ questions: [{}, {}], current: 2 }), true);
+});
+
+test("isNewBestScore treats a first score as a new best", () => {
+  assert.equal(isNewBestScore(80, null), true);
+});
+
+test("isNewBestScore returns true only for a higher score", () => {
+  assert.equal(isNewBestScore(81, 80), true);
+  assert.equal(isNewBestScore(80, 80), false);
+  assert.equal(isNewBestScore(79, 80), false);
 });
 
 test("isCorrect returns true for the right answer", () => {
