@@ -60,6 +60,13 @@ function isQuizFinished(state) {
 }
 
 /**
+ * Returns true when the current percentage beats the previous best.
+ */
+function isNewBestScore(current, best) {
+  return Number.isFinite(current) && (best === null || current > best);
+}
+
+/**
  * Converts a score into a whole-number percentage (0-100).
  */
 function calculatePercentage(score, total) {
@@ -108,6 +115,7 @@ if (typeof module !== "undefined" && module.exports) {
     createQuiz,
     answerQuestion,
     isQuizFinished,
+    isNewBestScore,
     isCorrect,
     calculatePercentage,
     getGrade,
