@@ -1,7 +1,9 @@
 // UI code: connects the quiz logic (quiz.js) to the page (index.html).
 
 const QUESTION_TIME_LIMIT = 15;
-const state = { questions: [], current: 0, score: 0, timeLeft: 0, timerId: null, answered: false };
+let state = createQuiz([]);
+let timeLeft = 0;
+let timerId = null;
 
 const startScreen = document.getElementById("start-screen");
 const quizScreen = document.getElementById("quiz-screen");
@@ -23,9 +25,7 @@ function showScreen(screenToShow) {
 
 function startQuiz() {
   stopTimer();
-  state.questions = shuffle(QUESTIONS);
-  state.current = 0;
-  state.score = 0;
+  state = createQuiz(QUESTIONS);
   showScreen(quizScreen);
   renderQuestion();
 }
@@ -33,8 +33,7 @@ function startQuiz() {
 function renderQuestion() {
   stopTimer();
   const question = state.questions[state.current];
-  state.timeLeft = QUESTION_TIME_LIMIT;
-  state.answered = false;
+  timeLeft = QUESTION_TIME_LIMIT;
   progressText.textContent = `Question ${state.current + 1} of ${state.questions.length}`;
   updateTimer();
   questionText.textContent = question.question;
@@ -52,38 +51,38 @@ function renderQuestion() {
     optionsList.appendChild(item);
   });
 
-  state.timerId = setInterval(() => {
-    state.timeLeft--;
+  timerId = setInterval(() => {
+    timeLeft--;
     updateTimer();
-    if (state.timeLeft <= 0) {
+    if (timeLeft <= 0) {
       finishQuestion();
     }
   }, 1000);
 }
 
 function updateTimer() {
-  timerText.textContent = formatTimeLeft(state.timeLeft);
-  timerText.classList.toggle("low-time", state.timeLeft <= 5);
+  timerText.textContent = formatTimeLeft(timeLeft);
+  timerText.classList.toggle("low-time", timeLeft <= 5);
 }
 
 function stopTimer() {
-  if (state.timerId !== null) {
-    clearInterval(state.timerId);
-    state.timerId = null;
+  if (timerId !== null) {
+    clearInterval(timerId);
+    timerId = null;
   }
 }
 
 function finishQuestion(selectedIndex, selectedButton) {
   if (state.answered) return;
-  state.answered = true;
   stopTimer();
 
   const question = state.questions[state.current];
   const buttons = optionsList.querySelectorAll("button");
   buttons.forEach((button) => (button.disabled = true));
 
-  if (selectedButton && isCorrect(question, selectedIndex)) {
-    state.score++;
+  const result = answerQuestion(state, selectedIndex);
+  state = result.state;
+  if (selectedButton && result.correct) {
     selectedButton.classList.add("correct");
     feedbackText.textContent = "Correct!";
   } else if (selectedButton) {
@@ -105,8 +104,8 @@ function selectAnswer(selectedIndex, selectedButton) {
 
 function nextQuestion() {
   stopTimer();
-  state.current++;
-  if (state.current < state.questions.length) {
+  state = { ...state, current: state.current + 1, answered: false };
+  if (!isQuizFinished(state)) {
     renderQuestion();
   } else {
     showResults();

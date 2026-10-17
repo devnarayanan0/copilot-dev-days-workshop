@@ -4,12 +4,70 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const {
   shuffle,
+  createQuiz,
+  answerQuestion,
+  isQuizFinished,
   isCorrect,
   calculatePercentage,
   getGrade,
   getFeedbackMessage,
   formatTimeLeft,
 } = require("../src/quiz.js");
+
+test("createQuiz returns a fresh initial state", () => {
+  const questions = [{ question: "One", options: ["a"], answer: 0 }];
+  const state = createQuiz(questions);
+
+  assert.deepEqual(state, {
+    questions,
+    current: 0,
+    score: 0,
+    answered: false,
+  });
+  assert.notStrictEqual(state, questions);
+  assert.notStrictEqual(state.questions, questions);
+});
+
+test("answerQuestion returns a new state and records a correct answer", () => {
+  const state = {
+    questions: [{ question: "One", options: ["a", "b"], answer: 1 }],
+    current: 0,
+    score: 0,
+    answered: false,
+  };
+
+  const result = answerQuestion(state, 1);
+
+  assert.equal(result.correct, true);
+  assert.deepEqual(result.state, { ...state, score: 1, answered: true });
+  assert.deepEqual(state, {
+    questions: state.questions,
+    current: 0,
+    score: 0,
+    answered: false,
+  });
+  assert.notStrictEqual(result.state, state);
+});
+
+test("answerQuestion records an incorrect answer without mutating state", () => {
+  const state = {
+    questions: [{ question: "One", options: ["a", "b"], answer: 1 }],
+    current: 0,
+    score: 2,
+    answered: false,
+  };
+
+  const result = answerQuestion(state, 0);
+
+  assert.equal(result.correct, false);
+  assert.deepEqual(result.state, { ...state, answered: true });
+  assert.equal(state.answered, false);
+});
+
+test("isQuizFinished reports whether every question is complete", () => {
+  assert.equal(isQuizFinished({ questions: [{}, {}], current: 1 }), false);
+  assert.equal(isQuizFinished({ questions: [{}, {}], current: 2 }), true);
+});
 
 test("isCorrect returns true for the right answer", () => {
   assert.equal(isCorrect({ answer: 2 }, 2), true);

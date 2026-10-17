@@ -15,10 +15,48 @@ function shuffle(items) {
 }
 
 /**
+ * Creates the initial state for a quiz without changing the question input.
+ */
+function createQuiz(questions) {
+  return {
+    questions: shuffle(questions),
+    current: 0,
+    score: 0,
+    answered: false,
+  };
+}
+
+/**
  * Returns true when the selected option is the correct one.
  */
 function isCorrect(question, selectedIndex) {
   return question.answer === selectedIndex;
+}
+
+/**
+ * Records an answer in a new state object.
+ */
+function answerQuestion(state, selectedIndex) {
+  if (state.answered) {
+    return { state: { ...state }, correct: false };
+  }
+
+  const correct = isCorrect(state.questions[state.current], selectedIndex);
+  return {
+    state: {
+      ...state,
+      score: state.score + (correct ? 1 : 0),
+      answered: true,
+    },
+    correct,
+  };
+}
+
+/**
+ * Returns true when all questions have been answered.
+ */
+function isQuizFinished(state) {
+  return state.current >= state.questions.length;
 }
 
 /**
@@ -67,6 +105,9 @@ function formatTimeLeft(seconds) {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     shuffle,
+    createQuiz,
+    answerQuestion,
+    isQuizFinished,
     isCorrect,
     calculatePercentage,
     getGrade,
